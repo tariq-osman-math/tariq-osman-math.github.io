@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tariq Osman</title>
+  <meta name="description" content="Tariq Osman, Instructor in Mathematics at Brandeis University.">
+
+  <!-- ===== FONT =====
+       Loads a typewriter font from Google Fonts (free).
+       To try another, replace BOTH "Courier+Prime" here and "Courier Prime" below, e.g. with:
+         "IBM Plex Mono"   (cleaner, modern typewriter)
+         "Special Elite"   (old, worn typewriter look)
+       In the link line, spaces become + (e.g. IBM+Plex+Mono). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- ===== STYLE (you normally won't need to touch this) ===== -->
+  <style>
+    body {
+      margin: 0;
+      font-family: "Courier Prime", "Courier New", monospace;
+      color: #494e52;
+      background: #fff;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    /* Link colour. Forest green = #228b22. Try #1b5e20 for a darker green. */
+    a { color: #228b22; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Top menu */
+    nav {
+      border-bottom: 1px solid #f2f3f3;
+      padding: 1em 2em;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4em 1.6em;
+      align-items: baseline;
+    }
+    nav a { color: #7a8288; }
+    nav a.home { color: #494e52; font-weight: bold; font-size: 1.1em; margin-right: 0.5em; }
+
+    /* Two-column layout: sidebar + main text */
+    .page {
+      max-width: 1100px;
+      margin: 2em auto;
+      padding: 0 2em;
+      display: flex;
+      gap: 3em;
+    }
+    aside { flex: 0 0 200px; }
+    aside img { width: 100%; max-width: 200px; border-radius: 50%; }
+    aside h3 { margin: 0.6em 0 0.3em; color: #313639; }
+    aside ul { list-style: none; padding: 0; margin: 0.5em 0; font-size: 0.9em; }
+    main { flex: 1; min-width: 0; }
+
+    h2 {
+      color: #313639;
+      border-bottom: 1px solid #f2f3f3;
+      padding-bottom: 0.3em;
+      margin-top: 1.8em;
+    }
+    main li { margin-bottom: 0.9em; }
+
+    footer {
+      border-top: 1px solid #f2f3f3;
+      margin-top: 3em;
+      padding: 1.5em 2em;
+      font-size: 0.8em;
+      color: #898c8f;
+      text-align: center;
+    }
+
+    /* On phones: stack sidebar on top */
+    @media (max-width: 700px) {
+      .page { flex-direction: column; gap: 1em; }
+      aside { text-align: center; }
+      aside img { max-width: 150px; }
+      aside li { display: inline-block; margin: 0 0.8em; }  /* links side by side on phones */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== TOP MENU ===== -->
+  <nav>
+    <a class="home" href="./">Tariq Osman</a>
+    <a href="files/t-osman-cv-nov-24.pdf">CV</a>
+  </nav>
+
+  <div class="page">
+
+    <!-- ===== SIDEBAR: photo, name, contact ===== -->
+    <aside>
+      <img src="images/tariq-website-photo.jpg" alt="Tariq Osman">
+      <ul>
+        <li><a href="mailto:tariqosman@brandeis.edu">✉ Email</a></li>
+        <li><a href="https://arxiv.org/a/osman_t_1.html">✎ arXiv</a></li>
+      </ul>
+    </aside>
+
+    <!-- ===== MAIN TEXT ===== -->
+    <main>
+
+      <p>
+        I am currently an Instructor in Mathematics at
+        <a href="https://www.brandeis.edu/mathematics/">Brandeis University</a>.
+        I completed my Ph.D. in 2022 at
+        <a href="https://www.queensu.ca/mathstat/">Queen's University</a>, under the supervision of
+        <a href="https://sites.google.com/view/fcellaro/home">Francesco Cellarosi</a>.
+        I enjoy studying problems at the interface of probability, and analytic number theory,
+        typically with the aid of methods from homogeneous dynamics. Recently, I have also become
+        interested in studying probabilistic questions in the world of translation surfaces.
+      </p>
+
+      <h2>Papers and Preprints</h2>
+      <!-- To add a paper: copy one <li> ... </li> block and edit it. Newest at top. -->
+      <ul>
+        <li>
+          <a href="https://arxiv.org/pdf/2409.15660"><b>An Effective Slope Gap Distribution for Lattice Surfaces</b></a>
+          with Joshua Southerland, and Jane Wang.
+          (to appear in Discrete and Continuous Dynamical Systems)
+        </li>
+        <li>
+          <a href="https://arxiv.org/pdf/2306.11119"><b>Bounds for Smooth Theta Sums with Rational Parameters</b></a>
+          with Francesco Cellarosi.
+          (to appear in <i>Journal of Number Theory</i>)
+        </li>
+        <li>
+          <a href="https://arxiv.org/pdf/2210.09838"><b>Heavy tailed and compactly supported distributions of quadratic Weyl sums with rational parameters</b></a>
+          with Francesco Cellarosi.
+          (submitted)
+        </li>
+        <li>
+          <a href="https://arxiv.org/pdf/2203.06274"><b>Improved Tail Estimates for the Distribution of Quadratic Weyl Sums</b></a>
+          with Francesco Cellarosi, and Jory Griffin.
+          Special issue <i>Advances in Dynamical systems by the DinAmicI group</i> of the
+          <i>Bollettino dell'Unione Matematica Italiana</i>, 16, 2, 2023.
+          Featured as <a href="https://link.springer.com/collections/gcddgdhjcb">Editor's top pick article of 2023</a>
+        </li>
+      </ul>
+
+      <h2>Work in Progress</h2>
+      <ul>
+        <li>
+          <b>Limit Theorems and Tail Estimates for Smooth Siegel Theta Series</b>
+          with Jory Griffin and Jens Marklof.
+        </li>
+        <li>
+          <b>Bounds for Smooth Siegel Theta Series with Rational Parameters</b>
+          with Michael Lu (as part of
+          <a href="https://math.mit.edu/research/highschool/primes/program/">MIT PRIMES</a>).
+        </li>
+      </ul>
+
+    </main>
+  </div>
+
+  <footer>
+    © 2026 Tariq Osman
+  </footer>
+
+</body>
+</html>
