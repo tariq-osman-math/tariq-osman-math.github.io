@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exponential sums: the region and the path | Tariq Osman</title>
+
+  <!-- Same font as the homepage -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- KaTeX: typesets the formula like LaTeX (loaded from a free public server) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.js"
+          onload="window.renderFormula && renderFormula()"></script>
+
+  <!-- ===== STYLE (matches index.html) ===== -->
+  <style>
+    :root {
+      --ink: #494e52;      /* body text, same as homepage */
+      --dark: #313639;     /* headings */
+      --soft: #7a8288;     /* captions, menu */
+      --hair: #f2f3f3;     /* light divider lines */
+      --rule: #d5d9dc;     /* borders, axes */
+      --green: #228b22;    /* link / accent colour, same as homepage */
+    }
+    body {
+      margin: 0;
+      font-family: "Courier Prime", "Courier New", monospace;
+      color: var(--ink);
+      background: #fff;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+    a { color: var(--green); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Top menu (same as homepage) */
+    nav {
+      border-bottom: 1px solid var(--hair);
+      padding: 1em 2em;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4em 1.6em;
+      align-items: baseline;
+    }
+    nav a { color: var(--soft); }
+    nav a.home { color: var(--ink); font-weight: bold; font-size: 1.1em; margin-right: 0.5em; }
+    nav a.here { color: var(--ink); }
+
+    /* ----- Buttons ----- */
+    .group { display: flex; gap: 0.5em; width: 100%; }
+    .group button { flex: 1 1 auto; }
+    #play { flex: 0 0 auto; }
+    button {
+      font: inherit; color: var(--ink); background: #fff;
+      border: 1px solid var(--rule); padding: 0.35em 0.6em; cursor: pointer;
+    }
+    #play { padding: 0.35em 0.9em; }
+    button:hover { border-color: var(--green); color: var(--green); }
+    button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+    button[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: #fff; }
+    .alpha { font-variant-numeric: tabular-nums; }
+    .alpha b { color: var(--dark); }
+    .keys { font-size: 0.75em; color: var(--soft); }
+
+    /* ----- Formula, with the range written under the summation sign ----- */
+    .formula { font-style: italic; margin: 0; font-size: 1.05em; padding-bottom: 0.9em; }
+    .sum {
+      position: relative; display: inline-block; line-height: 1;
+      vertical-align: -0.32em;          /* raise/lower the sigma relative to e(...) */
+      margin: 0 0.22em 0 0.05em;        /* space before / after the sigma */
+    }
+    .formula .where { display: block; margin-top: 1em; }   /* second line, below the range */
+    .formula.tex { font-style: normal; padding-bottom: 0; }
+    .formula.tex .katex { font-size: 1.15em; }               /* size of the LaTeX formula */
+    /* Typewriter look: KaTeX does the layout, but letters, digits and brackets use the
+       page's font. The big sum sign and the blackboard-bold Z keep KaTeX's own fonts. */
+    .formula.tex .katex { font-family: "Courier Prime", "Courier New", monospace; }
+    .formula.tex .katex .mathnormal,
+    .formula.tex .katex .mathit { font-family: "Courier Prime", "Courier New", monospace; font-style: italic; }
+    .formula.tex .katex .text { font-family: "Courier Prime", "Courier New", monospace; }
+    .formula.tex .where { display: inline-block; margin: 0 0 0 2.2em; }   /* like \qquad */
+    @media (max-width: 900px) { .formula.tex .where { display: block; margin: 0.4em 0 0; } }
+    .sum .sig { display: block; font-size: 1.7em; font-style: normal; }
+    .sum .lim {                         /* the range, centred under the sigma */
+      position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      font-size: 0.6em; white-space: nowrap; margin-top: 0.1em;
+    }
+
+    /* ----- Panels ----- */
+    .plate { border: 1px solid var(--rule); position: relative; background: #fff; }
+    canvas { display: block; width: 100%; }
+    .tag { position: absolute; left: 12px; top: 8px; font-size: 0.85em; color: var(--soft); }
+    .cap {
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.2em 1em;
+      padding: 0.45em 0.8em; border-top: 1px solid var(--hair);
+      font-size: 0.85em; color: var(--soft);
+    }
+    .cap b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+    /* ----- Explanation ----- */
+    .explain { font-size: 0.85em; }
+    .explain h2 { font-size: 1em; color: var(--dark); margin: 0 0 0.2em; }
+    .explain p { margin: 0 0 0.7em; }
+    .scale {
+      display: inline-block; width: 7em; height: 0.7em; vertical-align: middle; margin: 0 0.3em;
+      background: linear-gradient(to right, hsl(0,68%,47%), hsl(64,68%,42%), hsl(128,68%,41%),
+                                            hsl(191,68%,42%), hsl(255,68%,47%));
+    }
+
+    /* ===== COMPUTER LAYOUT =====
+       Two columns that fit on one screen. Left (wide): buttons, formula and the
+       path, which fills the remaining height. Right (narrow): the description
+       and the region of summation. */
+    .page { box-sizing: border-box; width: 100%; max-width: 1500px; margin: 0 auto; }
+    @media (min-width: 901px) {
+      body { height: 100vh; display: flex; flex-direction: column; }
+      .page {
+        flex: 1; min-height: 0; padding: 1em 2em 1.2em;
+        display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 1.8em;
+      }
+      .main { display: flex; flex-direction: column; gap: 0.9em; min-height: 0; }
+      .top { display: flex; align-items: center; flex-wrap: wrap; gap: 0.8em 2.5em; }
+      .buttons { width: 400px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 0.5em; }
+      .panel-path { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+      .fill { flex: 1; min-height: 0; position: relative; }
+      .fill canvas { position: absolute; inset: 0; height: 100%; }
+      .side { display: flex; flex-direction: column; gap: 1em; min-height: 0; overflow-y: auto; }
+      .panel-region { flex: 1 1 0; min-height: 150px; max-height: 320px; display: flex; flex-direction: column; }
+      .panel-region.strip { flex: 0 0 auto; height: 130px; min-height: 0; }   /* the integers need less height */
+    }
+    @media (min-width: 901px) and (max-height: 720px) {
+      .explain { font-size: 0.8em; }
+      .keys { display: none; }
+    }
+
+    /* ===== PHONE / NARROW LAYOUT =====
+       Buttons at the top, then the formula, the path, the description and the region. */
+    @media (max-width: 900px) {
+      .page { display: flex; flex-direction: column; gap: 0.6em; padding: 1.2em 1em 2em; }
+      .main, .side { display: contents; }
+      .buttons { display: flex; flex-direction: column; gap: 0.5em; }
+      .formula { margin: 0.6em 0 0.3em; }
+      .explain { margin-top: 0.8em; }
+      .play-word { display: none; }
+      .keys { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== TOP MENU (keep in step with index.html) ===== -->
+  <nav>
+    <a class="home" href="./">Tariq Osman</a>
+    <a href="files/t-osman-cv-nov-24.pdf">CV</a>
+    <a class="here" href="exponential-sums.html">Exponential sums</a>
+  </nav>
+
+  <div class="page">
+
+    <!-- Left column: buttons, formula and the path -->
+    <div class="main">
+      <div class="top">
+        <div class="buttons">
+          <div class="group modes">
+            <button class="mode" data-m="1" aria-pressed="true">n&alpha;</button>
+            <button class="mode" data-m="2" aria-pressed="false">n&sup2;&alpha;</button>
+            <button class="mode" data-m="3" aria-pressed="false">Q(n,m)&alpha;</button>
+          </div>
+          <div class="group">
+            <button id="play" aria-label="Grow"><span class="play-icon">&#9654;</span><span class="play-word"> Grow</span></button>
+            <button id="rational">&alpha; rational</button>
+            <button id="random">&alpha; irrational</button>
+          </div>
+          <span class="alpha">&alpha; = <b id="aOut"></b></span>
+        </div>
+        <p class="formula" id="formula"></p>
+      </div>
+
+      <div class="plate panel-path">
+        <div class="fill"><canvas id="path"></canvas></div>
+        <div class="tag">the path of partial sums</div>
+        <div class="cap">
+          <span id="capP">&nbsp;</span>
+          <span>|S| = <b id="absS">—</b> &nbsp; |S|/&radic;(E|S|&sup2;) = <b id="nrmS">—</b></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: what is plotted, and the region of summation -->
+    <div class="side">
+      <div class="explain">
+        <h2>The path</h2>
+        <p>The partial sums S<sub>1</sub>(&alpha;), S<sub>2</sub>(&alpha;), &hellip; joined in order in the
+          complex plane: each summand is one step of the path, and the end point is the full sum.</p>
+        <h2>The region</h2>
+        <p id="explainRegion"></p>
+        <h2>Colours</h2>
+        <p>Order of summation: first <span class="scale"></span> last.
+          A point in the region and its step in the path have the same colour.</p>
+        <div class="keys">keys: 1 2 3 &middot; space grow &middot; q rational &middot; r irrational</div>
+      </div>
+      <div class="plate panel-region">
+        <div class="fill"><canvas id="region"></canvas></div>
+        <div class="tag">the region</div>
+        <div class="cap"><span id="capR">&nbsp;</span><span id="capR2">&nbsp;</span></div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+"use strict";
+const TAU = Math.PI * 2;
+const $ = id => document.getElementById(id);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const frac = x => x - Math.floor(x);
+const FONT = '"Courier Prime", "Courier New", monospace';
+const regionC = $("region"), pathC = $("path");
+
+/* ---------------- the binary form Q(n,m) = n^2 + sqrt2 m^2 -------------
+   Shells: one distinct value of Q, carrying a sign orbit of 4, 2 or 1
+   lattice points.  Built once, sorted by value.                        */
+const RT = Math.SQRT2;
+const TMAX = 9000;
+const SH = (() => {
+  const val = [], mul = [], aa = [], bb = [];
+  const B = Math.floor(Math.sqrt(TMAX / RT));
+  for (let b = 0; b <= B; b++) {
+    const rb = RT * b * b, rem = TMAX - rb;
+    if (rem < 0) continue;
+    const amax = Math.floor(Math.sqrt(rem));
+    for (let a = 0; a <= amax; a++) {
+      val.push(a * a + rb); mul.push((a > 0 ? 2 : 1) * (b > 0 ? 2 : 1)); aa.push(a); bb.push(b);
+    }
+  }
+  const idx = val.map((_, i) => i).sort((i, j) => val[i] - val[j]);
+  const V = new Float64Array(idx.length), M = new Float64Array(idx.length);
+  const A = new Int32Array(idx.length), Bv = new Int32Array(idx.length);
+  const cum = new Float64Array(idx.length + 1), cum2 = new Float64Array(idx.length + 1);
+  idx.forEach((k, i) => {
+    V[i] = val[k]; M[i] = mul[k]; A[i] = aa[k]; Bv[i] = bb[k];
+    cum[i + 1] = cum[i] + M[i]; cum2[i + 1] = cum2[i] + M[i] * M[i];
+  });
+  return { V, M, A, B: Bv, cum, cum2, n: idx.length };
+})();
+function shellsFor(N) {                      // how many shells fit in N summands
+  let lo = 0, hi = SH.n;
+  while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (SH.cum[mid] <= N) lo = mid; else hi = mid - 1; }
+  return Math.max(1, lo);
+}
+
+/* Number of summands in each mode (fixed now that the N slider is gone).
+   Change these numbers to show longer or shorter sums.                  */
+const NFIX = { 1: 150, 2: 2500, 3: Math.floor(SH.cum[SH.n]) };
+
+/* ---------------- the three sums -------------------------------------- */
+function polyPath(alpha, N, d) {
+  const ux = new Float64Array(d + 1), uy = new Float64Array(d + 1);
+  const D = d === 1 ? [1, 1] : [1, 3, 2];    // Delta^k p(1)/alpha for d = 1, 2
+  for (let k = 0; k <= d; k++) {
+    const f = frac(alpha * D[k]);
+    ux[k] = Math.cos(TAU * f); uy[k] = Math.sin(TAU * f);
+  }
+  const out = new Float64Array(2 * (N + 1));
+  let Sx = 0, Sy = 0;
+  for (let n = 1; n <= N; n++) {
+    Sx += ux[0]; Sy += uy[0];
+    out[2 * n] = Sx; out[2 * n + 1] = Sy;
+    for (let k = 0; k < d; k++) {
+      const x = ux[k] * ux[k + 1] - uy[k] * uy[k + 1];
+      uy[k] = ux[k] * uy[k + 1] + uy[k] * ux[k + 1]; ux[k] = x;
+    }
+  }
+  return { pts: out, rms: Math.sqrt(N) };
+}
+function formPath(alpha, shells) {
+  const out = new Float64Array(2 * (shells + 1));
+  let Sx = 0, Sy = 0;
+  for (let i = 0; i < shells; i++) {
+    const ph = alpha * SH.V[i], f = ph - Math.floor(ph), m = SH.M[i];
+    Sx += m * Math.cos(TAU * f); Sy += m * Math.sin(TAU * f);
+    out[2 * (i + 1)] = Sx; out[2 * (i + 1) + 1] = Sy;
+  }
+  return { pts: out, rms: Math.sqrt(SH.cum2[shells]) };
+}
+
+/* ---------------- drawing ---------------------------------------------- */
+function colour(u) {
+  return "hsl(" + (255 * u).toFixed(1) + ",68%," + (47 - 6 * Math.sin(Math.PI * u)).toFixed(1) + "%)";
+}
+function fit(c, ratio) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = c.clientWidth || c.parentElement.clientWidth;
+  const h = Math.round(w * ratio);
+  c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+  c.style.height = h + "px";
+  const ctx = c.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  return [ctx, w, h];
+}
+
+/* On a computer the path fills the space it is given; on a phone its height follows its width. */
+const DESKTOP = window.matchMedia("(min-width: 901px)");
+function fitPath() { return fitBox(pathC, 0.8); }
+function fitBox(c, ratio) {
+  if (!DESKTOP.matches) return fit(c, ratio);
+  c.style.height = "";
+  const box = c.parentElement;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = box.clientWidth, h = box.clientHeight;
+  c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+  const ctx = c.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  return [ctx, w, h];
+}
+
+function drawPath(pts, count) {
+  const [ctx, W, H] = fitPath();
+  if (count < 1) return;
+  let x0 = 0, x1 = 0, y0 = 0, y1 = 0;
+  for (let i = 0; i <= count; i++) {
+    const x = pts[2 * i], y = pts[2 * i + 1];
+    if (x < x0) x0 = x; if (x > x1) x1 = x;
+    if (y < y0) y0 = y; if (y > y1) y1 = y;
+  }
+  // scale so the path fills the frame (same scale in both directions, so no distortion)
+  const padX = 24, padTop = 34, padBot = 28;
+  const dx = Math.max(x1 - x0, 1e-9), dy = Math.max(y1 - y0, 1e-9);
+  const s = Math.min((W - 2 * padX) / dx, (H - padTop - padBot) / dy);
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  const midY = padTop + (H - padTop - padBot) / 2;
+  const px = x => W / 2 + (x - cx) * s, py = y => midY - (y - cy) * s;
+  const pad = padX;
+
+  ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(px(0), py(0), 4, 0, TAU); ctx.stroke();
+
+  ctx.lineJoin = ctx.lineCap = "round";
+  ctx.lineWidth = count > 20000 ? 0.7 : (count > 3000 ? 1.0 : (count > 300 ? 1.5 : 2.2));
+  const bands = Math.max(1, Math.min(700, count));
+  let cur = -1;
+  for (let i = 1; i <= count; i++) {
+    const band = Math.min(bands - 1, Math.floor((i - 1) / count * bands));
+    if (band !== cur) {
+      if (cur >= 0) ctx.stroke();
+      ctx.strokeStyle = colour(bands > 1 ? band / (bands - 1) : 0);
+      ctx.beginPath(); ctx.moveTo(px(pts[2 * i - 2]), py(pts[2 * i - 1]));
+      cur = band;
+    }
+    ctx.lineTo(px(pts[2 * i]), py(pts[2 * i + 1]));
+  }
+  if (cur >= 0) ctx.stroke();
+
+  if (s > 26 && s < W - 80) {                   // unit scale bar
+    ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad, H - 16); ctx.lineTo(pad + s, H - 16); ctx.stroke();
+    ctx.fillStyle = css("--soft"); ctx.font = "13px " + FONT;
+    ctx.fillText("1", pad + s + 6, H - 11);
+  }
+}
+
+/* Height/width of the region panel: a thin strip for the integers, taller for the ellipse */
+const REGION_RATIO_Z = 0.3, REGION_RATIO_Q = 0.58;   // phone only; on a computer the panel has a fixed height
+
+function drawInterval(shown, target) {
+  const [ctx, W, H] = fitBox(regionC, REGION_RATIO_Z);
+  const pad = 22, y = H / 2 + 8;
+  const px = n => pad + (n / target) * (W - 2 * pad);
+  ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W - pad, y); ctx.stroke();
+
+  const r = shown > 400 ? 1.6 : (shown > 100 ? 2.2 : 3.2);
+  for (let n = 1; n <= shown; n++) {
+    ctx.fillStyle = colour((n - 1) / Math.max(1, shown - 1));
+    ctx.beginPath(); ctx.arc(px(n), y, r, 0, TAU); ctx.fill();
+  }
+  ctx.strokeStyle = css("--green"); ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(px(shown), y - 18); ctx.lineTo(px(shown), y + 18); ctx.stroke();
+  ctx.fillStyle = css("--soft"); ctx.font = "13px " + FONT;
+  ctx.fillText("1", pad - 4, y + 24);
+  ctx.fillText("N", px(shown) - 4, y + 34);
+}
+
+function drawEllipse(shownShells, targetShells) {
+  const [ctx, W, H] = fitBox(regionC, REGION_RATIO_Q);
+  const Tt = SH.V[targetShells - 1], Ts = SH.V[shownShells - 1];
+  const pad = 14, top = 30;                     // leave room at the top for the tag
+  const ax = Math.sqrt(Tt), ay = Math.sqrt(Tt / RT);
+  const s = Math.min((W - 2 * pad) / (2 * ax), (H - top - pad) / (2 * ay));
+  const cy0 = top + (H - top - pad) / 2;
+  const px = x => W / 2 + x * s, py = y => cy0 - y * s;
+
+  ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;          // axes
+  ctx.beginPath(); ctx.moveTo(px(-ax), py(0)); ctx.lineTo(px(ax), py(0));
+  ctx.moveTo(px(0), py(-ay)); ctx.lineTo(px(0), py(ay)); ctx.stroke();
+
+  ctx.setLineDash([4, 4]);                                      // target ellipse
+  ctx.beginPath(); ctx.ellipse(px(0), py(0), ax * s, ay * s, 0, 0, TAU); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const rr = shownShells > 2200 ? 1.3 : (shownShells > 600 ? 2.0 : 3.4);
+  for (let i = 0; i < shownShells; i++) {
+    ctx.fillStyle = colour(i / Math.max(1, shownShells - 1));
+    const a = SH.A[i], b = SH.B[i];
+    const xs = a === 0 ? [0] : [a, -a], ys = b === 0 ? [0] : [b, -b];
+    for (const x of xs) for (const y of ys) {
+      ctx.beginPath(); ctx.arc(px(x), py(y), rr, 0, TAU); ctx.fill();
+    }
+  }
+  ctx.strokeStyle = css("--green"); ctx.lineWidth = 2.2;       // current ellipse
+  ctx.beginPath();
+  ctx.ellipse(px(0), py(0), Math.sqrt(Ts) * s, Math.sqrt(Ts / RT) * s, 0, 0, TAU);
+  ctx.stroke();
+}
+
+/* ---------------- state ------------------------------------------------ */
+const S = { mode: 1, a: Math.SQRT2 - 1, label: "√2 − 1", shown: null, playing: false };
+
+/* A summation sign with its range underneath */
+const sum = range => '<span class="sum"><span class="sig">∑</span><span class="lim">' + range + '</span></span>';
+const FORMULA = {
+  1: "S<sub>N</sub>(\u03B1) = " + sum("n \u2264 N") + "e(n\u03B1)",
+  2: "S<sub>N</sub>(\u03B1) = " + sum("n \u2264 N") + "e(n\u00B2\u03B1)",
+  3: "S<sub>T</sub>(\u03B1) = " + sum("Q(n,m) \u2264 T") + "e(Q(n,m)\u03B1),<span class=\"where\">where Q(n,m) = n\u00B2 + \u221A2 m\u00B2</span>"
+};
+
+/* Text next to the region panel, one per sum type */
+const EXPLAIN = {
+  1: "The integers 1 \u2264 n \u2264 N, taken in order. Each n gives the unit step e(n\u03B1).",
+  2: "The integers 1 \u2264 n \u2264 N, taken in order. Each n gives the unit step e(n\u00B2\u03B1).",
+  3: "The lattice points (n,m) \u2208 \u2124\u00B2 in the ellipse Q(n,m) \u2264 T, taken in increasing " +
+     "order of Q. Points with equal Q(n,m) form a shell; each shell is one step of the path, " +
+     "of length equal to its number of points."
+};
+
+let raf = false;
+function schedule() { if (!raf) { raf = true; requestAnimationFrame(() => { raf = false; render(); }); } }
+
+function render() {
+  const al = S.a, N = NFIX[S.mode];
+  const Nshown = S.shown === null ? N : Math.max(1, Math.min(N, Math.round(S.shown)));
+  let P, count, rms;
+
+  if (S.mode === 3) {
+    const kT = shellsFor(N), kS = shellsFor(Nshown);
+    P = formPath(al, kS); count = kS; rms = P.rms;
+    drawEllipse(kS, kT);
+    $("capR").textContent = SH.cum[kS].toLocaleString() + " lattice points";
+    $("capR2").textContent = "T = " + SH.V[kS - 1].toFixed(2);
+  } else {
+    P = polyPath(al, Nshown, S.mode); count = Nshown; rms = P.rms;
+    drawInterval(Nshown, N);
+    $("capR").textContent = Nshown.toLocaleString() + " integers";
+    $("capR2").textContent = "1 \u2264 n \u2264 " + Nshown.toLocaleString();
+  }
+  drawPath(P.pts, count);
+
+  const ex = P.pts[2 * count], ey = P.pts[2 * count + 1];
+  const abs = Math.hypot(ex, ey);
+  $("absS").textContent = abs.toFixed(2);
+  $("nrmS").textContent = (abs / rms).toFixed(3);
+  $("capP").textContent = count.toLocaleString() + " steps";
+  $("aOut").textContent = S.label;
+}
+
+/* ---------------- the buttons ------------------------------------------ */
+/* The formula in LaTeX, typeset by KaTeX. If KaTeX can't load, the plain version above is used. */
+/* Edit the formulas here (ordinary LaTeX, but every backslash written twice).
+   SUM is a slightly enlarged summation sign; change \\Large to \\large or \\LARGE to resize it. */
+const SUM = "\\mathop{\\large\\sum}\\limits";
+const TEX = {
+  1: ["S_N(\\alpha) = \\displaystyle" + SUM + "_{n \\le N} e^{2\\pi i n\\alpha}"],
+  2: ["S_N(\\alpha) = \\displaystyle" + SUM + "_{n \\le N} e^{2\\pi i n^2\\alpha}"],
+  3: ["S_T(\\alpha) = \\displaystyle" + SUM + "_{\\substack{(n,m) \\in \\mathbb{Z}^2 \\\\ Q(n,m) \\le T}} e^{2\\pi i Q(n,m)\\alpha},",
+      "Q(n,m) = n^2 + \\sqrt{2}\\, m^2"]
+};
+function renderFormula() {
+  const el = $("formula");
+  if (!window.katex) { el.classList.remove("tex"); el.innerHTML = FORMULA[S.mode]; return; }
+  el.classList.add("tex");
+  el.innerHTML = TEX[S.mode].map((t, i) => '<span class="' + (i ? "where" : "") + '"></span>').join("");
+  TEX[S.mode].forEach((t, i) => katex.render(t, el.children[i], { throwOnError: false }));
+}
+
+function setMode(m) {
+  S.mode = m;
+  for (const b of document.querySelectorAll(".mode"))
+    b.setAttribute("aria-pressed", String(+b.dataset.m === m));
+  renderFormula();
+  $("explainRegion").innerHTML = EXPLAIN[m];
+  document.querySelector(".panel-region").classList.toggle("strip", m !== 3);
+  schedule();
+}
+function setAlpha(a, label) { S.a = a; S.label = label; if (!S.playing) S.shown = null; schedule(); }
+
+const gcd = (a, b) => { while (b) { [a, b] = [b, a % b]; } return a; };
+
+/* Rational: denominator q uniform in {2, ..., QMAX}, then numerator p
+   uniform among 1 <= p < q with gcd(p, q) = 1.                         */
+const QMAX = 50;
+function randomRational() {
+  const q = 2 + Math.floor(Math.random() * (QMAX - 1));
+  let p;
+  do { p = 1 + Math.floor(Math.random() * (q - 1)); } while (gcd(p, q) !== 1);
+  setAlpha(p / q, p + "/" + q);
+}
+/* Random: alpha uniform on [0, 1), i.e. Lebesgue measure. */
+function randomReal() {
+  const a = Math.random();
+  setAlpha(a, a.toFixed(10));
+}
+
+let t0 = 0;
+function step(now) {
+  if (!S.playing) return;
+  if (!t0) t0 = now;
+  const u = Math.min(1, (now - t0) / 6500);
+  S.shown = Math.max(1, Math.pow(NFIX[S.mode], u));   // geometric sweep: slow at the start
+  render();
+  if (u >= 1) stopGrow(); else requestAnimationFrame(step);
+}
+function playLabel(icon, word) {
+  $("play").querySelector(".play-icon").innerHTML = icon;
+  $("play").querySelector(".play-word").textContent = " " + word;
+  $("play").setAttribute("aria-label", word);
+}
+function stopGrow() { S.playing = false; S.shown = null; playLabel("&#9654;", "Grow"); schedule(); }
+function play() {
+  if (S.playing) { stopGrow(); return; }
+  S.playing = true; t0 = 0; playLabel("&#9632;", "Stop");
+  requestAnimationFrame(step);
+}
+
+for (const b of document.querySelectorAll(".mode"))
+  b.addEventListener("click", () => setMode(+b.dataset.m));
+$("play").addEventListener("click", play);
+$("rational").addEventListener("click", randomRational);
+$("random").addEventListener("click", randomReal);
+
+window.addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if (k === "1" || k === "2" || k === "3") { setMode(+k); e.preventDefault(); }
+  else if (k === " ") { play(); e.preventDefault(); }
+  else if (k === "q") randomRational();
+  else if (k === "r") randomReal();
+});
+
+let rz;
+window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(schedule, 120); });
+DESKTOP.addEventListener("change", schedule);
+if (document.fonts) document.fonts.ready.then(schedule);   // redraw labels once the font has loaded
+
+setMode(1);
+</script>
+</body>
+</html>
